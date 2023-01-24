@@ -1,0 +1,115 @@
+To parse the config file using C++, you could use the following approach:
+
+Create a class called "ConfigParser" that will handle reading and parsing the config file. 
+It could have a function called "parse()" that takes in the file names as a parameter and
+that reads the file line by line and extracts the relevant information,
+ such as the server address, server name, root directory, etc.
+
+For each line, you can use string maipulation functions like find() and substr() to extract key-value pairs.
+
+You can use a map to store the key-value pairs, with the key being the name of the configuration item (e.g. "listen",
+ "server_name", "root", etc.) and the value being the corresponding value 
+ (e.g. "8080", "le_site.com www.le_site.com", "www", etc.).
+
+Create a class called "Location" that will store information about each location section 
+in the config file. It could have member variables for the index file, request methods, 
+and any other information specified in the location section.
+
+In the Config class, create private member variables to store the information extracted from the config file, 
+such as the server address, server name, root directory, and a map of locations.
+
+In the Config class, create a constructor that takes a ConfigParser object as an argument and uses it to parse the 
+config file. The constructor should also initialize the private member variables with the information extracted from 
+the config file.
+
+Create getter and setter functions in the Config class to access the private member variables.
+
+Create a function called "determineCase()" in the Config class that takes a string and an integer as arguments.
+This function should be called by the ConfigParser class' parse() function when a new line is read. 
+It will determine which member function to call based on the string.
+
+Create member functions for each option in the config file (e.g. setAddress(), setServerName(), setRoot(), etc.)
+that take a ConfigParser object and an integer as arguments. These functions will be called by the 
+determineCase() function to set the appropriate member variables.
+
+Finally, create an output() function in the Config class that will print out the contents of the class.
+
+You can also include additional functions such as checkIfComplete() , listDirectory() , indexChecker(), createIndexFile() etc.
+
+
+
+
+
+class Location;
+class ConfigParser;
+// Class definition
+class Config
+{
+private:
+   unsigned _address;
+   vector<string> _serverName;
+   string _root;
+   unsigned long long _maxSize;
+   map<string, Location> _location;
+   string _cgi;
+   map<int, string> _errorPage;
+
+public:
+// Constructor
+   Config(const Config &rhs );
+    Config(const ConfigParser &confP);
+    ~Config();
+   Config& operator=(const Config &rhs);
+// Getters
+   unsigned int getAddress() const;
+   const vector<string> &getServerName() const;
+   const string &getRoot() const;
+   unsigned long long int getMaxSize() const;
+   const map<string, Location> &getLocation() const;
+   const string &getCgi() const;
+   const map<int, string> &getErrorPage() const;
+// string getLocation(string key)    { return _location[key]; }
+// Setters
+   void setAddress(const ConfigParser &confP, int line);
+   void setServer_name(const ConfigParser &confP, int line);
+   void setRoot(const ConfigParser &confP, int line);
+   void setMaxSize(const ConfigParser &confP, int line);
+   void setLocation(const ConfigParser &confP, int line);
+   void setCgi(const ConfigParser &confP, int line);
+   void setErrorPage(const ConfigParser &confP, int line);
+// Output
+   void output();
+//
+   void determineCase(const string &word, const ConfigParser &confP, int line);
+
+   void checkIfComplete();
+
+// void checkFileAccess(string filename);
+
+   vector<string>    listDirectory(const string& dirRoot) const;
+   static bool             indexChecker(vector<string> dirLs);
+   void            createIndexFile(vector<string> dirLs, string dirRoot);
+
+   // MemberFunction Typedef
+   typedef void (Config::* ConfMemFuncPtr)(const ConfigParser&, int);
+};
+
+
+
+
+
+
+
+
+
+File lezen en kijken wanneer je server tegenkomt
+
+if so:
+   check of de haakjes kloppen en stop vervolgens het hele 'server blok' line voor line in een vector
+   std::vector<std::string>   ServerLines;
+
+   checken voor haakjes
+
+   dan nog vector (subvector aanmaken) dit wordt de vector<std::string> per server blok
+
+   (die vector meegeven aan een server constructor...(?))
