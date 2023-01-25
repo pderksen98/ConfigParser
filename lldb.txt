@@ -1,0 +1,17 @@
+MAKE USERE LLDB IS INSTALLED
+
+HOW TO COMPILE
+    - compile with the -g flag
+
+HOW TO START LLDB
+    - lldb ./a.out							(only executable)
+    - lldb -- ./a.out arg1 arg2 etc         (with arguments)
+
+HOW TO RUN 
+    - type 'r' or 'run'
+
+SET A BREAKPOINT
+    - break set -f 'file name' -l 'line number'
+    - b 'file name' : 'line number'
+
+    
