@@ -6,6 +6,7 @@
 #include <iostream>
 #include <vector>
 #include <map>
+#include <sstream> //stringstream
 
 class Config
 {
@@ -22,8 +23,9 @@ class Config
 		//constructors
 		Config();
 		~Config();
-		Config(const Config &conf);
-		Config& operator=(const Config &conf);
+		Config(const Config &other);							//not needed yet
+		Config& operator=(Config other); //copy and swap idiom 	//not needed yet
+		Config(std::vector<std::string> &serverVector);
 
 		//getters
 		const unsigned int						&getPort() const;
@@ -42,6 +44,9 @@ class Config
 		void	setCgi(std::string &cgi);
 		void	setLocations(std::map<std::string,std::string> &locations);
 		void	setErrorPage(std::map<int,std::string> &errorPage);
+
+
+		void	determineKeyword(const std::string &word);
 
 
 };

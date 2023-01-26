@@ -88,6 +88,7 @@ size_t	findServerBracket(const std::vector<std::string> &vec, size_t line)
 //Then it adds al these line into a 'server vector' and returns this vector.
 //Linecount is a static variable that keeps track of the last line that is added to a server vector
 //Servercount is a static variable that keeps track of the number of server blocks encountered
+//When no server is found: if server count is also 0 a error is thrown else a empty vector is returned
 std::vector<std::string>	findServerBlock(const std::vector<std::string> &vec)
 {
 	static size_t				lineCount = 0;
@@ -95,7 +96,7 @@ std::vector<std::string>	findServerBlock(const std::vector<std::string> &vec)
 	std::vector<std::string>	serverBlock;
 	size_t						begin;
 	size_t						end;
-	int							found = 0;
+	int							found = 0; 
 
 	for (; lineCount < vec.size(); lineCount++)
 	{
@@ -105,7 +106,7 @@ std::vector<std::string>	findServerBlock(const std::vector<std::string> &vec)
 			end = findServerBracket(vec, begin);
 			lineCount = end + 1;
 			serverCount++;
-			found = 1;
+			found = 1; 
 			break ;
 		}
 	}
@@ -135,7 +136,7 @@ std::vector<std::vector<std::string> >	createServerVector(const std::vector<std:
 		serverBlock = findServerBlock(file);
 	}
 	if (serverVector.empty()){
-		std::cerr << "hallo: No server block found in the provided file" << std::endl; //overbodig wsl en throw
+		std::cerr << "No server block found in the provided file" << std::endl; //overbodig wsl en throw
 		exit(1);
 	}
 	return (serverVector);
