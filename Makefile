@@ -1,6 +1,6 @@
 NAME = config
-SRC = src/main.cpp
-INC =  
+SRC = src/main.cpp src/configUtils.cpp src/configPrint.cpp src/configParser.cpp
+INC = includes/config.hpp
 
 ifdef DEBUG #for sanitize
 	CC=clang++
