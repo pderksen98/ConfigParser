@@ -8,6 +8,16 @@
 #include <map>
 #include <sstream> //stringstream
 
+enum conf_parser {
+	LISTEN = 1,
+	SERVER_NAME,
+	ROOT,
+	LOCATION,
+	MAX_SIZE,
+	ERROR_PAGE,
+	CGI
+};
+
 class Config
 {
 	private:
@@ -46,14 +56,16 @@ class Config
 		void	setErrorPage(std::map<int,std::string> &errorPage);
 
 
-		void	determineKeyword(const std::string &word);
+		size_t	determineIfKeyword(const std::string &word);
+		void	callKeywordFunction(size_t &enumValue, std::string &line);
 
-
+		void	printConfigClass();
 };
 
 
 //main.cpp
-int	main(int argc, char const *argv[]);
+std::vector<Config>						setConfigVector(std::vector<std::vector<std::string> > &serverVector);
+int										main(int argc, char const *argv[]);
 
 //configUtils.cpp
 void									failure(const char *message);
@@ -62,7 +74,11 @@ bool									checkBrackets(const std::vector<std::string> &vec);
 size_t									findServerBracket(const std::vector<std::string> &vec, size_t line);
 std::vector<std::string>				findServerBlock(const std::vector<std::string> &vec);
 std::vector<std::vector<std::string> >	createServerVector(const std::vector<std::string> &file);
+std::string								truncateString(const std::string &str, char c);
+std::string 							findFirstWord(std::string &line) ;
+std::string								getSecondWord(std::string &line);
+unsigned int							stringToUnsigned(std::string &word);
 
 //ConfigPrint.cpp
-void	printStringVector(std::vector<std::string> &vec);
-void	printServerVector(std::vector<std::vector<std::string> > &vec);
+void									printStringVector(std::vector<std::string> &vec);
+void									printServerVector(std::vector<std::vector<std::string> > &vec);

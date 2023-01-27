@@ -1,34 +1,59 @@
 #include "../includes/config.hpp"
 
-std::string findFirstWord(std::string &line) 
+
+//Checks if the word found is one of the keywords
+size_t	Config::determineIfKeyword(const std::string &word)
 {
-    std::stringstream ss(line);
-    std::string firstWord;
-    ss >> firstWord;
-    return firstWord;
+	if (word == "listen")
+		return (LISTEN);
+	else if (word == "server_name")
+		return (SERVER_NAME);
+	else if (word == "root")
+		return (ROOT);
+	else if (word == "location")
+		return (LOCATION);
+	else if (word == "client_max_body_size")
+		return (MAX_SIZE);
+	else if (word == "error_page")
+		return (ERROR_PAGE);
+	else if (word == "cgi")
+		return (CGI);
+	return (0);
 }
 
-//HIER GEBLEVEN		HIER GEBLEVEN 		HIER GEBLEVEN 		HIER GEBLEVEN
-//HIER GEBLEVEN		HIER GEBLEVEN 		HIER GEBLEVEN 		HIER GEBLEVEN
-//HIER GEBLEVEN		HIER GEBLEVEN 		HIER GEBLEVEN 		HIER GEBLEVEN
-//HIER GEBLEVEN		HIER GEBLEVEN 		HIER GEBLEVEN 		HIER GEBLEVEN
-//HIER GEBLEVEN		HIER GEBLEVEN 		HIER GEBLEVEN 		HIER GEBLEVEN
-
-void	Config::determineKeyword(const std::string &word) //not sure of second const
+void	Config::callKeywordFunction(size_t &enumValue, std::string &line)
 {
-	//checks if the word is {listen, server_name, root, location, client_max_body_size, error_page, cgi}
-	//if yes: it calls the correct setter function
+	if (enumValue == LISTEN)
+	{
+		std::string		word = getSecondWord(line);
+		unsigned int	port = stringToUnsigned(word);
+		if (port != 0)
+			Config::setPort(port);
+		return ;
+	}
+	else if (enumValue == ROOT)
+	{
+		std::string	root = getSecondWord(line);
+			std::cout << root << std::endl;
+		if (root.empty())
+			std::cout << "akfjadksfjfkldjfkladjsfkljf\n";
+		return ;
+	}
 }
 
 Config::Config(std::vector<std::string> &serverVector)
 	: _port(80), _maxSize(1) //add errorpages
 {
+	size_t	enumValue;
+
 	for (size_t i = 0; i < serverVector.size(); i++)
 	{
 		std::string word = findFirstWord(serverVector[i]);
-		determineKeyword(word);
+		enumValue = determineIfKeyword(word);
+		if (enumValue == 0)
+			continue ;
+		callKeywordFunction(enumValue, serverVector[i]);
 	}
-
 }
 
 // For each server found in the server vector the 'fillConfigObject' function is called
@@ -38,7 +63,7 @@ std::vector<Config>	setConfigVector(std::vector<std::vector<std::string> > &serv
 {
 	std::vector<Config>	configVector;
 
-	for (size_t i = 0; !serverVector[i].empty(); i++)
+	for (size_t i = 0; i < serverVector.size(); i++) //ITERATOR
 	{
 		Config	conf(serverVector[i]);
 		configVector.push_back(conf);
@@ -47,6 +72,7 @@ std::vector<Config>	setConfigVector(std::vector<std::vector<std::string> > &serv
 }
 
 
+//fileVector = string vector; serverVector = vector<string> vector; configVector is Config vector
 int	main(int argc, char const *argv[])
 {
 	if (argc != 2){
@@ -56,29 +82,24 @@ int	main(int argc, char const *argv[])
 	std::vector<std::string> fileVector;
 	fileVector = getFileVector(argv[1]);
 	// printStringVector(fileVector);
+
 	if (!checkBrackets(fileVector)) {
 		std::cerr << "Found non matching bracket(s) in '" << argv[1] << "' file" << std::endl; //throw
 		exit(1);
 	}
+
 	std::vector<std::vector<std::string> >	serverVector;
 	serverVector = createServerVector(fileVector);
 	// printServerVector(serverVector);
 
-	std::string line1 = "			Hallo dit is wat tekst\n";
-	std::string line2 = "			Hallo\n";
-	std::string line3 = "	Hallo\n";
-	std::string line4 = "ajkldsjfaksjfkasfj";
-	std::string line5 = "     			";
-	std::string line6 = "\n    	check";
-
-
-	std::cout << findFirstWord(line1) << std::endl;
-	std::cout << findFirstWord(line2) << std::endl;
-	std::cout << findFirstWord(line3) << std::endl;
-	std::cout << findFirstWord(line4) << std::endl;
-	std::cout << findFirstWord(line5) << std::endl;
-	std::cout << findFirstWord(line6) << std::endl;
+	std::vector<Config>	configVector;
+	configVector = setConfigVector(serverVector);
 	
+	for (size_t i = 0; i < configVector.size(); i++)
+	{
+		configVector[i].printConfigClass();
+	}
+
 	
 	return (0);
 }

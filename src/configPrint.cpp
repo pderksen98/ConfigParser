@@ -22,3 +22,8 @@ void	printServerVector(std::vector<std::vector<std::string> > &vec)
 		std::cout << std::endl;
 	}
 }
+
+void	Config::printConfigClass(void)
+{
+	std::cout << "listen = " << this->getPort() << std::endl;
+}

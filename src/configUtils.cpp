@@ -141,3 +141,49 @@ std::vector<std::vector<std::string> >	createServerVector(const std::vector<std:
 	}
 	return (serverVector);
 }
+
+//Function that truncates the string if a char c is found
+//If not found the original string is not truncated and returned
+std::string	truncateString(const std::string &str, char c)
+{
+	size_t	position = str.find(c);
+	if (position != std::string::npos)
+		return (str.substr(0, position));
+	return (str);
+}
+
+//Finds first word of string 'line' and returns this word
+std::string findFirstWord(std::string &line) 
+{
+    std::stringstream ss(line);
+    std::string firstWord;
+    ss >> firstWord;
+    return firstWord;
+}
+
+//converts string to unsigned int
+//if input is not only digits 0 is returned
+unsigned int	stringToUnsigned(std::string &word)
+{
+	for (size_t i = 0; i < word.length(); i++)
+	{
+		if (!isdigit(word[i]))
+			return (0);
+	}
+	return (std::stoul(word));
+}
+
+
+//HIER ZIT NOG EEN FOUT
+std::string	getSecondWord(std::string &line)
+{
+	std::stringstream	ss(line);
+	std::string			word;
+
+	ss >> word; //get first word
+	if (!ss.eof())
+		ss >> word; //get second word				//WANNEER NIET GEVONDEN BLIJFT DIT HET EERSTE WOORD
+	else
+		return ("");
+	return (truncateString(word, ';'));
+}
