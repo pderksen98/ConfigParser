@@ -135,8 +135,8 @@ Location::Location(std::vector<std::string> &locationBody)
 			ss >> name;
 			while (ss >> name)
 			{
-				if (_requestMethods.find("name") != _requestMethods.end())
-					_requestMethods["name"] = true;
+				if (_requestMethods.count(name))
+					_requestMethods[name] = true;
 			}
 		}
 	}

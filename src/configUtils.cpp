@@ -187,8 +187,6 @@ unsigned int	stringToUnsigned(std::string &word)
 	return (std::stoul(word));
 }
 
-
-//HIER ZIT NOG EEN FOUT
 std::string	getSecondWord(std::string &line)
 {
 	std::stringstream	ss(line);

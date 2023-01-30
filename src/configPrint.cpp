@@ -31,9 +31,7 @@ void	Location::printLocationClass(void)
 	else
 		std::cout << "autoindex : off" << std::endl;
 
-	// std::cout << "GET : " << _requestMethods["GET"] << std::endl;
 	std::cout << "GET : " << this->getRequestMethods("GET") << std::endl;
-
 	std::cout << "POST : " << _requestMethods["POST"] << std::endl;
 	std::cout << "DELETE : " << _requestMethods["DELETE"] << std::endl;
 	std::cout << "PUT : " << _requestMethods["PUT"] << std::endl;
