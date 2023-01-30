@@ -23,7 +23,45 @@ void	printServerVector(std::vector<std::vector<std::string> > &vec)
 	}
 }
 
+void	Location::printLocationClass(void)
+{
+	std::cout << "index : " << this->getIndex() << std::endl;
+	if (this->getAutoIndex())
+		std::cout << "autoindex : on" << std::endl;
+	else
+		std::cout << "autoindex : off" << std::endl;
+
+	// std::cout << "GET : " << _requestMethods["GET"] << std::endl;
+	std::cout << "GET : " << this->getRequestMethods("GET") << std::endl;
+
+	std::cout << "POST : " << _requestMethods["POST"] << std::endl;
+	std::cout << "DELETE : " << _requestMethods["DELETE"] << std::endl;
+	std::cout << "PUT : " << _requestMethods["PUT"] << std::endl;
+	std::cout << "PATCH : " << _requestMethods["PATCH"] << std::endl;
+
+	std::cout << "upload : " << this->getUpload() << std::endl;
+
+}
+
 void	Config::printConfigClass(void)
 {
-	std::cout << "listen = " << this->getPort() << std::endl;
+	std::cout << "address : " << this->getPort() << std::endl << std::endl;
+	
+	std::vector<std::string> serverNames = this->getServerNames();
+	std::cout << "server name(s) :" << std::endl;
+	for (size_t i = 0; i < serverNames.size(); i++)
+		std::cout << serverNames[i] << std::endl;
+	std::cout << std::endl;
+	std::cout << "root : " << this->getRoot() << std::endl << std::endl;
+	std::cout << "max_size : " << this->getMaxSize() << std::endl << std::endl;
+	std::cout << "cgi : " << this->getCgi() << std::endl << std::endl;
+	for (std::map<std::string, Location>::const_iterator it = _locations.begin(); it != _locations.end(); it++)
+	{
+		std::cout << "Location : " << it->first << std::endl;
+		Location object = it->second;
+		object.printLocationClass();
+		std::cout << std::endl;
+	}
+	
 }
+

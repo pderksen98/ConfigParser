@@ -21,24 +21,57 @@ size_t	Config::determineIfKeyword(const std::string &word)
 	return (0);
 }
 
+void	valueToString(Config &object, std::string &line, size_t &enumValue)
+{
+	std::string	value = getSecondWord(line);
+	if (!value.empty())
+	{
+		if (enumValue == ROOT)
+			object.setRoot(value);
+		else if (enumValue == CGI)
+			object.setCgi(value);
+	}
+}
+
+void	valueToUnsigned(Config &object, std::string &line, size_t &enumValue)
+{
+	std::string		word = getSecondWord(line);
+	unsigned int	value = stringToUnsigned(word);
+	if (value != 0)
+	{
+		if (enumValue == LISTEN)
+			object.setPort(value);
+		else if (enumValue == MAX_SIZE)
+			object.setMaxSize(value);
+	}
+}
+
+void	valueToStringVector(Config &object, std::string &line)
+{
+	std::vector<std::string>	serverNames;
+	std::string					name;
+
+	std::stringstream			ss(line);
+	ss >> name; 				//first word
+	while (ss >> name)
+		serverNames.push_back(name);
+	if (serverNames.empty())
+		return ;
+	object.setServerNames(serverNames);
+}
+
 void	Config::callKeywordFunction(size_t &enumValue, std::string &line)
 {
-	if (enumValue == LISTEN)
-	{
-		std::string		word = getSecondWord(line);
-		unsigned int	port = stringToUnsigned(word);
-		if (port != 0)
-			Config::setPort(port);
-		return ;
-	}
-	else if (enumValue == ROOT)
-	{
-		std::string	root = getSecondWord(line);
-			std::cout << root << std::endl;
-		if (root.empty())
-			std::cout << "akfjadksfjfkldjfkladjsfkljf\n";
-		return ;
-	}
+
+	if (enumValue == LISTEN || enumValue == MAX_SIZE)
+		valueToUnsigned(*this, line, enumValue);
+	else if (enumValue == ROOT || enumValue == CGI)
+		valueToString(*this, line, enumValue);
+	else if (enumValue == SERVER_NAME)
+		valueToStringVector(*this, line);
+
+
+
 }
 
 Config::Config(std::vector<std::string> &serverVector)
@@ -52,7 +85,20 @@ Config::Config(std::vector<std::string> &serverVector)
 		enumValue = determineIfKeyword(word);
 		if (enumValue == 0)
 			continue ;
-		callKeywordFunction(enumValue, serverVector[i]);
+		else if (enumValue == LOCATION)
+		{
+			std::string	locationName = getSecondWord(serverVector[i]);
+			if (locationName.empty())
+				continue ;
+			size_t end = findClosingBracket(serverVector, i);
+			std::vector<std::string> locationBody = returnLocationBody(serverVector, i, end);
+			Location location(locationBody);
+			this->setLocations(locationName, location);
+			while (i < end)
+				i++;
+		}
+		else
+			callKeywordFunction(enumValue, serverVector[i]);
 	}
 }
 
@@ -98,9 +144,10 @@ int	main(int argc, char const *argv[])
 	for (size_t i = 0; i < configVector.size(); i++)
 	{
 		configVector[i].printConfigClass();
+		std::cout << "-------------------------------------------" << std::endl;
 	}
 
-	
+	// system("leaks config");
 	return (0);
 }
 

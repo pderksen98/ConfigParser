@@ -8,7 +8,7 @@ void	failure(const char *message)
 }
 
 //Puts all the lines from the config file as strings in a vector
-//When a '#' character is found the rest of the line is seen as a comment, so the line gets truncated
+//When a '#' or ';' character is found the rest of the line is seen as a comment, so the line gets truncated
 //Empty lines are skipped and so do not get converted to a std::string in the vector
 const std::vector<std::string>	getFileVector(const std::string &fileName)
 {
@@ -25,13 +25,15 @@ const std::vector<std::string>	getFileVector(const std::string &fileName)
 			continue;
 		if (line.at(0) == '#')
 			continue;
-		for (size_t pos = 0; pos < line.length(); pos++)
-		{
-			if (line.at(pos) == '#'){
-				line = line.substr(0, pos);
-				break ;
-			}
-		}
+		// for (size_t pos = 0; pos < line.length(); pos++)
+		// {
+		// 	if (line.at(pos) == '#'){
+		// 		line = line.substr(0, pos);
+		// 		break ;
+		// 	}
+		// }
+		line = truncateString(line, '#');
+		line = truncateString(line, ';');
 		confVector.push_back(line);
 	}
 	return (confVector);
@@ -59,8 +61,9 @@ bool	checkBrackets(const std::vector<std::string> &vec)
 	return (true);
 }
 
-//Searches on which line number the closing bracket '}' for the server block is and returns this value
-size_t	findServerBracket(const std::vector<std::string> &vec, size_t line)
+//Searches on which line number the closing bracket '}' is found
+//'OpenBrackets' count is used for the server block because location also has open bracket
+size_t	findClosingBracket(const std::vector<std::string> &vec, size_t line)
 {
 	line++;
 	int	openBrackets = 1;
@@ -84,6 +87,17 @@ size_t	findServerBracket(const std::vector<std::string> &vec, size_t line)
 	return (line);
 }
 
+std::vector<std::string>	returnLocationBody(std::vector<std::string> &serverVector, size_t i, size_t end)
+{
+	std::vector<std::string>	locationBody;
+	while (i < end){
+		locationBody.push_back(serverVector[i]);
+		i++;
+	}
+	return (locationBody);
+}
+
+
 //Searches the config file for 'server {'. If found it searches the matching closing bracket.
 //Then it adds al these line into a 'server vector' and returns this vector.
 //Linecount is a static variable that keeps track of the last line that is added to a server vector
@@ -103,7 +117,7 @@ std::vector<std::string>	findServerBlock(const std::vector<std::string> &vec)
 		if (vec[lineCount].find("server {") != std::string::npos)
 		{
 			begin = lineCount;
-			end = findServerBracket(vec, begin);
+			end = findClosingBracket(vec, begin);
 			lineCount = end + 1;
 			serverCount++;
 			found = 1; 
@@ -178,12 +192,10 @@ unsigned int	stringToUnsigned(std::string &word)
 std::string	getSecondWord(std::string &line)
 {
 	std::stringstream	ss(line);
-	std::string			word;
+	std::string			Word;
 
-	ss >> word; //get first word
-	if (!ss.eof())
-		ss >> word; //get second word				//WANNEER NIET GEVONDEN BLIJFT DIT HET EERSTE WOORD
-	else
-		return ("");
-	return (truncateString(word, ';'));
+	ss >> Word; //get first word
+	Word = "";
+	ss >> Word; //get second word
+	return (Word);
 }

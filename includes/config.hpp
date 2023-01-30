@@ -18,6 +18,28 @@ enum conf_parser {
 	CGI
 };
 
+class Location
+{
+	private:
+		std::string					_index;
+		std::map<std::string, bool>	_requestMethods;
+		std::string					_upload;
+		bool						_autoIndex;
+
+	public:
+		Location();
+		Location(std::vector<std::string> &locationBody);
+		~Location();
+
+		const std::string					&getIndex() const;
+		bool								getRequestMethods(const std::string &key) const;
+		const std::string					&getUpload() const;
+		bool							 	getAutoIndex() const;
+
+	
+		void	printLocationClass();
+} ;
+
 class Config
 {
 	private:
@@ -26,7 +48,7 @@ class Config
 		std::vector<std::string>			_serverNames;
 		std::string							_root;
 		std::string							_cgi;
-		std::map<std::string,std::string>	_locations;
+		std::map<std::string,Location>		_locations;
 		std::map<int, std::string>			_errorPage;
 	
 	public:
@@ -43,7 +65,8 @@ class Config
 		const std::vector<std::string>			&getServerNames() const;
 		const std::string						&getRoot() const;
 		const std::string						&getCgi() const;
-		const std::map<std::string,std::string>	&getLocations() const;
+		// const std::map<std::string,Location>	&getLocations() const;
+		const Location							&getLocation(const std::string& key) const;
 		const std::map<int,std::string>			&getErrorPage() const;
 
 		//setters
@@ -52,7 +75,7 @@ class Config
 		void	setServerNames(std::vector<std::string> &serverNames);
 		void	setRoot(std::string &root);
 		void	setCgi(std::string &cgi);
-		void	setLocations(std::map<std::string,std::string> &locations);
+		void	setLocations(const std::string &key, const Location &value);
 		void	setErrorPage(std::map<int,std::string> &errorPage);
 
 
@@ -71,7 +94,7 @@ int										main(int argc, char const *argv[]);
 void									failure(const char *message);
 const std::vector<std::string>			getFileVector(const std::string &fileName);
 bool									checkBrackets(const std::vector<std::string> &vec);
-size_t									findServerBracket(const std::vector<std::string> &vec, size_t line);
+size_t									findClosingBracket(const std::vector<std::string> &vec, size_t line);
 std::vector<std::string>				findServerBlock(const std::vector<std::string> &vec);
 std::vector<std::vector<std::string> >	createServerVector(const std::vector<std::string> &file);
 std::string								truncateString(const std::string &str, char c);
@@ -82,3 +105,10 @@ unsigned int							stringToUnsigned(std::string &word);
 //ConfigPrint.cpp
 void									printStringVector(std::vector<std::string> &vec);
 void									printServerVector(std::vector<std::vector<std::string> > &vec);
+
+
+std::vector<std::string>	returnLocationBody(std::vector<std::string> &serverVector, size_t i, size_t end);
+
+void	valueToString(const Config &object, std::string &line, size_t &enumValue);
+void	valueToUnsigned(Config &object, std::string &line, size_t &enumValue);
+void	valueToStringVector(Config &object, std::string &line);
