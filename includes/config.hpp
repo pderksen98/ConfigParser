@@ -6,7 +6,7 @@
 #include <iostream>
 #include <vector>
 #include <map>
-#include <sstream> //stringstream
+#include <sstream> 
 
 enum conf_parser {
 	LISTEN = 1,
@@ -27,16 +27,17 @@ class Location
 		bool						_autoIndex;
 
 	public:
+		//constructors
 		Location();
 		Location(std::vector<std::string> &locationBody);
 		~Location();
 
+		//getters
 		const std::string					&getIndex() const;
 		const std::string					&getUpload() const;
 		bool								getRequestMethods(const std::string &key) const;
 		bool							 	getAutoIndex() const;
 
-	
 		void	printLocationClass();
 };
 
@@ -83,42 +84,25 @@ class Config
 };
 
 
-//main.cpp
-// size_t	Config::determineIfKeyword(const std::string &word);
-void	valueToString(Config &object, std::string &line, size_t &enumValue);
-void	valueToUnsigned(Config &object, std::string &line, size_t &enumValue);
-void	valueToStringVector(Config &object, std::string &line);
-// void	Config::callKeywordFunction(size_t &enumValue, std::string &line);
-// Config::Config(std::vector<std::string> &serverVector);
-std::vector<Config>	setConfigVector(std::vector<std::vector<std::string> > &serverVector);
-int		main(int argc, char const *argv[]);
-
-
-//configParser.cpp
-// Config::Config();
-// Config::~Config(){}
-// Config::Config(const Config &other);
-// Config& Config::operator=(Config other);
-//(all getters and setters and constructors)
-std::map<std::string, bool>	returnFalseMethodsMap(void);
-
-
+//print.cpp
+void									printStringVector(std::vector<std::string> &vec);
+void									printServerVector(std::vector<std::vector<std::string> > &vec);
 //configUtils.cpp
-void	failure(const char *message);
-const std::vector<std::string>	getFileVector(const std::string &fileName);
-bool	checkBrackets(const std::vector<std::string> &vec);
-size_t	findClosingBracket(const std::vector<std::string> &vec, size_t line);
-std::vector<std::string>	returnLocationBody(std::vector<std::string> &serverVector, size_t i, size_t end);
-std::vector<std::string>	findServerBlock(const std::vector<std::string> &vec);
+std::vector<std::string>				returnLocationBody(std::vector<std::string> &serverVector, size_t i, size_t end);
+unsigned int							stringToUnsigned(std::string &word);
+void									valueToUnsigned(Config &object, std::string &line, size_t &enumValue);
+void									valueToStringVector(Config &object, std::string &line);
+void									valueToString(Config &object, std::string &line, size_t &enumValue);
+std::map<std::string, bool>				returnFalseMethodsMap(void);
+std::string								truncateString(const std::string &str, char c);
+std::string								getSecondWord(std::string &line);
+std::string 							findFirstWord(std::string &line) ;
+bool									checkBrackets(const std::vector<std::string> &vec);
+size_t									findClosingBracket(const std::vector<std::string> &vec, size_t line);
+//configParser.cpp
+std::vector<Config>						setConfigVector(std::vector<std::vector<std::string> > &serverVector);
+std::vector<std::string>				findServerBlock(const std::vector<std::string> &vec);
 std::vector<std::vector<std::string> >	createServerVector(const std::vector<std::string> &file);
-std::string	truncateString(const std::string &str, char c);
-std::string findFirstWord(std::string &line) ;
-unsigned int	stringToUnsigned(std::string &word);
-std::string	getSecondWord(std::string &line);
-
-
-//configPrint.cpp
-void	printStringVector(std::vector<std::string> &vec);
-void	printServerVector(std::vector<std::vector<std::string> > &vec);
-// void	Location::printLocationClass(void);
-// void	Config::printConfigClass(void);
+const std::vector<std::string>			getFileVector(const std::string &fileName);
+//main.cpp
+int	main(int argc, char const *argv[]);

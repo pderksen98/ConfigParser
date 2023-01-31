@@ -1,5 +1,5 @@
 NAME = config
-SRC = src/main.cpp src/configUtils.cpp src/configPrint.cpp src/configParser.cpp
+SRC = src/main.cpp src/configUtils.cpp src/print.cpp src/configParser.cpp src/memberFunctions.cpp
 INC = includes/config.hpp
 
 ifdef DEBUG #for sanitize
