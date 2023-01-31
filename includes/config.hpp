@@ -50,7 +50,7 @@ class Config
 		std::string							_root;
 		std::string							_cgi;
 		std::map<std::string,Location>		_locations;
-		std::map<int, std::string>			_errorPage;
+		std::map<int, std::string>	_errorPage;
 	
 	public:
 		//constructors
@@ -67,7 +67,8 @@ class Config
 		const std::string						&getRoot() const;
 		const std::string						&getCgi() const;
 		const Location							&getLocation(const std::string& key) const;
-		const std::map<int,std::string>			&getErrorPage() const;
+		// const std::map<int,std::string>			&getErrorPage() const;
+		const std::string						&getErrorPage(const int &key) const;	
 
 		//setters
 		void	setPort(unsigned int &port);
@@ -76,9 +77,9 @@ class Config
 		void	setRoot(std::string &root);
 		void	setCgi(std::string &cgi);
 		void	setLocations(const std::string &key, const Location &value);
-		void	setErrorPage(std::map<int,std::string> &errorPage);
+		// void	setErrorPage(std::map<int,std::string> &errorPage);
+		void	setErrorPage(const int &key, const std::string &value);
 
-		size_t	determineIfKeyword(const std::string &word);
 		void	callKeywordFunction(size_t &enumValue, std::string &line);
 		void	printConfigClass();
 };
@@ -88,13 +89,17 @@ class Config
 void									printStringVector(std::vector<std::string> &vec);
 void									printServerVector(std::vector<std::vector<std::string> > &vec);
 //configUtils.cpp
+size_t									determineIfKeyword(const std::string &word);
 std::vector<std::string>				returnLocationBody(std::vector<std::string> &serverVector, size_t i, size_t end);
 unsigned int							stringToUnsigned(std::string &word);
 void									valueToUnsigned(Config &object, std::string &line, size_t &enumValue);
 void									valueToStringVector(Config &object, std::string &line);
 void									valueToString(Config &object, std::string &line, size_t &enumValue);
+void									valueToError(Config &object, std::string &line);
 std::map<std::string, bool>				returnFalseMethodsMap(void);
+std::map<int,std::string>				returnDefaultErrormap(void);
 std::string								truncateString(const std::string &str, char c);
+std::string								getThirdWord(std::string &line);
 std::string								getSecondWord(std::string &line);
 std::string 							findFirstWord(std::string &line) ;
 bool									checkBrackets(const std::vector<std::string> &vec);

@@ -1,5 +1,25 @@
 #include "../includes/config.hpp"
 
+//Checks if the word found is one of the keywords
+size_t	determineIfKeyword(const std::string &word)
+{
+	if (word == "listen")
+		return (LISTEN);
+	else if (word == "server_name")
+		return (SERVER_NAME);
+	else if (word == "root")
+		return (ROOT);
+	else if (word == "location")
+		return (LOCATION);
+	else if (word == "client_max_body_size")
+		return (MAX_SIZE);
+	else if (word == "error_page")
+		return (ERROR_PAGE);
+	else if (word == "cgi")
+		return (CGI);
+	return (0);
+}
+
 
 //Function that gets called in Config constructor when a 'location' keyword is found
 //Searches and returns the body of the location
@@ -73,6 +93,32 @@ void	valueToString(Config &object, std::string &line, size_t &enumValue)
 }
 
 
+//If  "error_page  404 path/name.html" is found in config file, the path value is changed from default to 'path/name.html'
+void	valueToError(Config &object, std::string &line)
+{
+	std::string			value;
+	std::string			errorCodeString;
+	int					errorCode;
+
+	errorCodeString = getSecondWord(line);
+	if (errorCodeString.empty()){
+		std::cerr << "No error code provided in config file" << std::endl;
+		return ;
+	}
+	errorCode = stoi(errorCodeString);
+	if (errorCode == 0){
+		std::cerr << "No correct error code provided in config file" << std::endl;
+		return ;
+	}
+	value = getThirdWord(line);
+	if (value.empty()){
+		std::cerr << "No error page provided for error code '" << errorCode << "' in config file" << std::endl;
+		return ;
+	}
+	object.setErrorPage(errorCode, value);
+}
+
+
 //Creates a map<string,bool> for the methods map in the Location class
 //All the values are iniated to be false at first
 std::map<std::string, bool>	returnFalseMethodsMap(void)
@@ -82,10 +128,26 @@ std::map<std::string, bool>	returnFalseMethodsMap(void)
 	methods["POST"] = false;
 	methods["DELETE"] = false;
 	methods["PUT"] = false;
-	methods["DELETE"] = false;
+	methods["PATCH"] = false;
 	return (methods);
 }
 
+
+//Creates a map<int,string> where all error codes are set to default path
+std::map<int,std::string>	returnDefaultErrormap(void)
+{
+	std::map<int,std::string> error;
+	error[400] = "default/error/400.html";
+	error[403] = "default/error/403.html";
+	error[404] = "default/error/404.html";
+	error[405] = "default/error/405.html";
+	error[413] = "default/error/413.html";
+	error[418] = "default/error/418.html";
+	error[500] = "default/error/500.html";
+	error[501] = "default/error/501.html";
+	error[505] = "default/error/505.html";
+	return (error);
+}
 
 //Function that truncates the string if a char c is found
 //If not found the original string is not truncated and returned
@@ -97,16 +159,30 @@ std::string	truncateString(const std::string &str, char c)
 	return (str);
 }
 
+//Returns third word of string line, if no 3rd word is found, a empty string is returned
+std::string	getThirdWord(std::string &line)
+{
+	std::stringstream	ss(line);
+	std::string			word;
+
+	ss >> word; //1st
+	word = "";
+	ss >> word; //2nd
+	word = "";
+	ss >> word; //3rd
+	return (word);
+}
+
 //Returns second word of string line, if no 2nd word is found, a empty string is returned
 std::string	getSecondWord(std::string &line)
 {
 	std::stringstream	ss(line);
-	std::string			Word;
+	std::string			word;
 
-	ss >> Word; //get first word
-	Word = "";
-	ss >> Word; //get second word
-	return (Word);
+	ss >> word; //get first word
+	word = "";
+	ss >> word; //get second word
+	return (word);
 }
 
 

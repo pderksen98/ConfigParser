@@ -13,6 +13,7 @@ Config::Config()
 {
 	_port = 80;
 	_maxSize = 1;
+	_errorPage = returnDefaultErrormap();
 }
 
 //No dynamically allocated memmory in the class so destructor is empty
@@ -43,7 +44,7 @@ Config& Config::operator=(Config other)
 }
 
 Config::Config(std::vector<std::string> &serverVector)
-	: _port(80), _maxSize(1) //add errorpages
+	: _port(80), _maxSize(1), _errorPage(returnDefaultErrormap())
 {
 	size_t	enumValue;
 
@@ -80,7 +81,13 @@ void	Config::setServerNames(std::vector<std::string> &serverNames)		{_serverName
 void	Config::setRoot(std::string &root) 									{_root = root;}
 void	Config::setCgi(std::string &cgi) 									{_cgi = cgi;}
 void	Config::setLocations(const std::string &key, const Location &value) {_locations[key] = value;}
-void	Config::setErrorPage(std::map<int,std::string> &errorPage) 			{_errorPage = errorPage;}
+void	Config::setErrorPage(const int &key, const std::string &value)
+{
+	if (_errorPage.count(key))
+		_errorPage[key] = value;
+	else
+		std::cerr << "No error code: " << key << std::endl; 													//throw ?
+}
 
 
 
@@ -92,40 +99,26 @@ const unsigned int							&Config::getMaxSize() const 	{return (_maxSize);}
 const std::vector<std::string>				&Config::getServerNames() const {return (_serverNames);}
 const std::string							&Config::getRoot() const 		{return (_root);}
 const std::string							&Config::getCgi() const 		{return (_cgi);}
-const std::map<int,std::string>				&Config::getErrorPage() const 	{return (_errorPage);}
+// const std::map<int,std::string>			&Config::getErrorPage() const 	{return (_errorPage);}
 const Location								&Config::getLocation(const std::string& key) const 
 {
 	 std::map<std::string,Location>::const_iterator it = _locations.find(key);
 	if (it == _locations.end())
-		std::cerr << "Location not found" << std::endl; 											//throw gaan gebruiken!
+		std::cerr << "Location: '" << key << "' not found" << std::endl; 										//throw gaan gebruiken!
 		// throw std::out_of_range("Location not found");
 	return (it->second);
 }
-
+const std::string							&Config::getErrorPage(const int &key) const
+{
+	std::map<int,std::string>::const_iterator it = _errorPage.find(key);
+	if (it == _errorPage.end())
+		std::cerr << "Error code '" << key << "' not found" << std::endl;										//throw gaan gebruiken!
+		//throw
+	return (it->second);
+}
 
 // -------------------------------- OTHER FUNCTIONS -------------------------------------
 
-
-
-//Checks if the word found is one of the keywords
-size_t	Config::determineIfKeyword(const std::string &word)
-{
-	if (word == "listen")
-		return (LISTEN);
-	else if (word == "server_name")
-		return (SERVER_NAME);
-	else if (word == "root")
-		return (ROOT);
-	else if (word == "location")
-		return (LOCATION);
-	else if (word == "client_max_body_size")
-		return (MAX_SIZE);
-	else if (word == "error_page")
-		return (ERROR_PAGE);
-	else if (word == "cgi")
-		return (CGI);
-	return (0);
-}
 
 
 void	Config::callKeywordFunction(size_t &enumValue, std::string &line)
@@ -137,6 +130,8 @@ void	Config::callKeywordFunction(size_t &enumValue, std::string &line)
 		valueToString(*this, line, enumValue);
 	else if (enumValue == SERVER_NAME)
 		valueToStringVector(*this, line);
+	else if (enumValue == ERROR_PAGE)
+		valueToError(*this, line);
 }
 
 
@@ -160,6 +155,10 @@ void	Config::printConfigClass(void)
 		object.printLocationClass();
 		std::cout << std::endl;
 	}
+	std::cout << "\nError page :" << std::endl;
+	for (std::map<int, std::string>::const_iterator it = _errorPage.begin(); it != _errorPage.end(); it++)
+		std::cout << it->first << " : " << it->second << std::endl;
+	std::cout << std::endl;
 }
 
 
@@ -238,12 +237,12 @@ void	Location::printLocationClass(void)
 	else
 		std::cout << "autoindex : off" << std::endl;
 
-	std::cout << "GET : " << this->getRequestMethods("GET") << std::endl;
-	std::cout << "POST : " << _requestMethods["POST"] << std::endl;
-	std::cout << "DELETE : " << _requestMethods["DELETE"] << std::endl;
-	std::cout << "PUT : " << _requestMethods["PUT"] << std::endl;
-	std::cout << "PATCH : " << _requestMethods["PATCH"] << std::endl;
-
+	for (std::map<std::string,bool>::const_iterator it = _requestMethods.begin(); it != _requestMethods.end(); it++)
+		std::cout << it->first << " : " << it->second << std::endl;
+	// std::cout << "GET : " << this->getRequestMethods("GET") << std::endl;
+	// std::cout << "POST : " << _requestMethods["POST"] << std::endl;
+	// std::cout << "DELETE : " << _requestMethods["DELETE"] << std::endl;
+	// std::cout << "PUT : " << _requestMethods["PUT"] << std::endl;
+	// std::cout << "PATCH : " << _requestMethods["PATCH"] << std::endl;
 	std::cout << "upload : " << this->getUpload() << std::endl;
-
 }
